@@ -1,6 +1,7 @@
-# Robotik_projekt
+# Robotik Projekt
+von Schu und Lae
 
-## Topic: 
+## Topic
 Vergleich der Performance von Reinforcement Learning mit traditionellen Algorithmen der Bahnplanung für einen mobilen Roboter in einer 2D Grid World
 
 [Das ist alles nur geklaut eo eo, das ist alles gar nicht meine (shoutout an Peter)]: # 
