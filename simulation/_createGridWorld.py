@@ -1,90 +1,87 @@
-from typing import Optional
+# initial Code from https://minigrid.farama.org/content/create_env_tutorial/
+
+from __future__ import annotations
+import json
 import numpy as np
-import gymnasium as gym
+from minigrid.core.grid import Grid
+from minigrid.core.mission import MissionSpace
+from minigrid.core.world_object import Goal, Wall
+from minigrid.manual_control import ManualControl
+from minigrid.minigrid_env import MiniGridEnv
 
-# from Tutorial:https://gymnasium.farama.org/introduction/create_custom_env/
+# get grid details
+file_path = "/home/lea/Dokumente/WS24_25/Robotik_projekt/simulation/grid_test.json"
 
-class GridWorldEnv(gym.Env):
+with open (file_path, 'r') as file:
+    map_data = json.load(file)
 
-    def __init__(self, size: int = 5):
-        # The size of the square grid
-        self.size = size
+def get_coordinates():
+    grid = np.array(map_data["grid"]).astype(int)
+    if np.shape(grid)[0] < map_data["size"]-1:
+        pad_n = map_data["size"] - np.shape(grid)[0] - 2
+        grid = np.pad(grid, pad_n, mode="constant")
+    return np.argwhere(grid==1)
 
-        # Define the agent and target location; randomly chosen in `reset` and updated in `step`
-        self._agent_location = np.array([-1, -1], dtype=np.int32)
-        self._target_location = np.array([-1, -1], dtype=np.int32)
 
-        # Observations are dictionaries with the agent's and the target's location.
-        # Each location is encoded as an element of {0, ..., `size`-1}^2
-        self.observation_space = gym.spaces.Dict(
-            {
-                "agent": gym.spaces.Box(0, size - 1, shape=(2,), dtype=int),
-                "target": gym.spaces.Box(0, size - 1, shape=(2,), dtype=int),
-            }
+class GridEnv(MiniGridEnv):
+    def __init__(
+            self,
+            size=map_data["size"],
+            agent_start_pos=(map_data["agent_x"], map_data["agent_x"]),
+            agent_start_dir=0,
+            max_steps: int | None = None,
+            **kwargs,
+    ):
+        self.agent_start_pos = agent_start_pos
+        self.agent_start_dir = agent_start_dir
+
+        mission_space = MissionSpace(mission_func=self._gen_mission)
+
+        if max_steps is None:
+            max_steps = 4 * size ** 2
+
+        super().__init__(
+            mission_space=mission_space,
+            grid_size=size,
+            # Set this to True for maximum speed
+            see_through_walls=True,
+            max_steps=max_steps,
+            **kwargs
         )
 
-        # We have 4 actions, corresponding to "right", "up", "left", "down"
-        self.action_space = gym.spaces.Discrete(4)
-        # Dictionary maps the abstract actions to the directions on the grid
-        self._action_to_direction = {
-            0: np.array([1, 0]),  # right
-            1: np.array([0, 1]),  # up
-            2: np.array([-1, 0]),  # left
-            3: np.array([0, -1]),  # down
-        }
+    @staticmethod
+    def _gen_mission():
+        return map_data["name"]
 
-    def _get_obs(self):
-        return {"agent": self._agent_location, "target": self._target_location}
+    def _gen_grid(self, width, height):
+        # Create an empty grid
+        self.grid = Grid(width, height)
 
-    def _get_info(self):
-        return {
-            "distance": np.linalg.norm(
-                self._agent_location - self._target_location, ord=1
-            )
-        }
+        # Generate the surrounding walls
+        self.grid.wall_rect(0, 0, width, height)
 
-    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None):
-        # We need the following line to seed self.np_random
-        super().reset(seed=seed)
+        # Generate vertical separation wall
+        for i in get_coordinates():
+            self.grid.set(i[1], i[0], Wall())
 
-        # Choose the agent's location uniformly at random
-        self._agent_location = self.np_random.integers(0, self.size, size=2, dtype=int)
+        # Place a goal square in the bottom-right corner
+        self.put_obj(Goal(), map_data["goal_x"] , map_data["goal_y"])
 
-        # We will sample the target's location randomly until it does not coincide with the agent's location
-        self._target_location = self._agent_location
-        while np.array_equal(self._target_location, self._agent_location):
-            self._target_location = self.np_random.integers(
-                0, self.size, size=2, dtype=int
-            )
+        # Place the agent
+        if self.agent_start_pos is not None:
+            self.agent_pos = self.agent_start_pos
+            self.agent_dir = self.agent_start_dir
+        else:
+            self.place_agent()
 
-        observation = self._get_obs()
-        info = self._get_info()
-
-        return observation, info
-
-    def step(self, action):
-        # Map the action (element of {0,1,2,3}) to the direction we walk in
-        direction = self._action_to_direction[action]
-        # We use `np.clip` to make sure we don't leave the grid bounds
-        self._agent_location = np.clip(
-            self._agent_location + direction, 0, self.size - 1
-        )
-
-        # An environment is completed if and only if the agent has reached the target
-        terminated = np.array_equal(self._agent_location, self._target_location)
-        truncated = False
-        reward = 1 if terminated else 0  # the agent is only reached at the end of the episode
-        observation = self._get_obs()
-        info = self._get_info()
-
-        return observation, reward, terminated, truncated, info
+        self.mission = map_data["name"]
 
 
-
-# To call the environment:
-#gym.register(
-#    id="gymnasium_env/GridWorld-v0",
-#   entry_point=GridWorldEnv,
-#   )
-
+# call in other files with
+# from simulation import GridEnv
+# from minigrid.manual_control import ManualControl
+# env = GridEnv(render_mode="human")
+# # enable manual control for testing
+# manual_control = ManualControl(env, seed=42)
+# manual_control.start()
 
