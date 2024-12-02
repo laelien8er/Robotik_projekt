@@ -9,29 +9,23 @@ from minigrid.core.world_object import Goal, Wall
 from minigrid.manual_control import ManualControl
 from minigrid.minigrid_env import MiniGridEnv
 
-# get grid details
-file_path = "/home/lea/Dokumente/WS24_25/Robotik_projekt/simulation/grid_test.json"
-
-with open (file_path, 'r') as file:
-    map_data = json.load(file)
-
-def get_coordinates():
-    grid = np.array(map_data["grid"]).astype(int)
-    if np.shape(grid)[0] < map_data["size"]-1:
-        pad_n = map_data["size"] - np.shape(grid)[0] - 2
-        grid = np.pad(grid, pad_n, mode="constant")
-    return np.argwhere(grid==1)
 
 
 class GridEnv(MiniGridEnv):
     def __init__(
             self,
-            size=map_data["size"],
-            agent_start_pos=(map_data["agent_x"], map_data["agent_x"]),
+            size: int = 10,
+            agent_start_pos=(0,0),
             agent_start_dir=0,
             max_steps: int | None = None,
+            map_file: str = False,
             **kwargs,
     ):
+        with open(map_file, 'r') as file:
+            self.map_data = json.load(file)
+            size = self.map_data["size"]
+            agent_start_pos = (self.map_data["agent_x"], self.map_data["agent_x"])
+
         self.agent_start_pos = agent_start_pos
         self.agent_start_dir = agent_start_dir
 
@@ -51,7 +45,7 @@ class GridEnv(MiniGridEnv):
 
     @staticmethod
     def _gen_mission():
-        return map_data["name"]
+        return "test"
 
     def _gen_grid(self, width, height):
         # Create an empty grid
@@ -61,11 +55,11 @@ class GridEnv(MiniGridEnv):
         self.grid.wall_rect(0, 0, width, height)
 
         # Generate vertical separation wall
-        for i in get_coordinates():
+        for i in self.get_coordinates():
             self.grid.set(i[1], i[0], Wall())
 
         # Place a goal square in the bottom-right corner
-        self.put_obj(Goal(), map_data["goal_x"] , map_data["goal_y"])
+        self.put_obj(Goal(), self.map_data["goal_x"] , self.map_data["goal_y"])
 
         # Place the agent
         if self.agent_start_pos is not None:
@@ -74,13 +68,27 @@ class GridEnv(MiniGridEnv):
         else:
             self.place_agent()
 
-        self.mission = map_data["name"]
+        self.mission = self.map_data["name"]
+
+    def get_coordinates(self):
+        grid = np.array(self.map_data["grid"]).astype(int)
+        if np.shape(grid)[0] < self.map_data["size"] - 1:
+            pad_n = self.map_data["size"] - np.shape(grid)[0] - 2
+            grid = np.pad(grid, pad_n, mode="constant")
+        return np.argwhere(grid == 1)
 
 
-# call in other files with
+
+
+
 # from simulation import GridEnv
 # from minigrid.manual_control import ManualControl
-# env = GridEnv(render_mode="human")
+
+# get grid details
+# file_path = "/home/lea/Dokumente/WS24_25/Robotik_projekt/simulation/grid_test.json"
+
+# env = GridEnv(render_mode="human" , map_file=file_path)
+
 # # enable manual control for testing
 # manual_control = ManualControl(env, seed=42)
 # manual_control.start()
