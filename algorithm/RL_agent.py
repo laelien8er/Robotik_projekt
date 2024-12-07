@@ -28,3 +28,41 @@ class MinigridFeaturesExtractor(BaseFeaturesExtractor):
 
     def forward(self, observations: torch.Tensor) -> torch.Tensor:
         return self.linear(self.cnn(observations))
+
+from minigrid.wrappers import ImgObsWrapper
+from stable_baselines3 import PPO
+
+policy_kwargs = dict(
+    features_extractor_class=MinigridFeaturesExtractor,
+    features_extractor_kwargs=dict(features_dim=128),
+)
+
+
+
+#### Train Agent #####
+
+from simulation import GridEnv
+# get grid details
+file_path = "/home/lea/Dokumente/WS24_25/Robotik_projekt/simulation/grid_test.json"
+env = GridEnv(render_mode="rgb_array", map_file=file_path)
+env = ImgObsWrapper(env)
+
+model = PPO("CnnPolicy", env, policy_kwargs=policy_kwargs, verbose=1)
+model.learn(total_timesteps=25000)
+
+env = GridEnv(render_mode="human", map_file=file_path)
+env = ImgObsWrapper(env)
+
+observation, _ = env.reset()
+
+episode_over = False
+while not episode_over:
+    action, _ = model.predict(observation)
+    observation, reward, terminated, truncated, _ = env.step(action)
+
+    episode_over = terminated or truncated
+
+env.close()
+
+
+

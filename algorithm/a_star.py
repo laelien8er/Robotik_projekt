@@ -78,13 +78,13 @@ class AStarAlgorithm:
             node = self.list_closed[[x[0] for x in self.list_closed].index(node[3])]
 
 
-# file_path = "/home/lea/Dokumente/WS24_25/Robotik_projekt/simulation/grid_test.json"
-# with open(file_path, 'r') as file:
-#     map_data = json.load(file)
-#
-# start = (map_data['agent_x'], map_data['agent_y'])
-# end = (map_data['goal_x'], map_data['goal_y'])
-# grid = map_data['grid']
-#
-# p = AStarAlgorithm(start, end, grid, h='airplane').find_path()
-# print(p)
+file_path = "/home/lea/Dokumente/WS24_25/Robotik_projekt/simulation/grid_test.json"
+with open(file_path, 'r') as file:
+    map_data = json.load(file)
+
+start = (map_data['agent_x'], map_data['agent_y'])
+end = (map_data['goal_x'], map_data['goal_y'])
+grid = map_data['grid']
+
+p = AStarAlgorithm(start, end, grid, h='airplane').find_path()
+print(p)

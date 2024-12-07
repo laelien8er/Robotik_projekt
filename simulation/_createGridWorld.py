@@ -82,14 +82,14 @@ class GridEnv(MiniGridEnv):
 
 
 
-# from simulation import GridEnv
-# from minigrid.manual_control import ManualControl
-
-# get grid details
+# # from simulation import GridEnv
+# # from minigrid.manual_control import ManualControl
+#
+# # get grid details
 # file_path = "/home/lea/Dokumente/WS24_25/Robotik_projekt/simulation/grid_test.json"
-
+#
 # env = GridEnv(render_mode="human" , map_file=file_path)
-
+#
 # # enable manual control for testing
 # manual_control = ManualControl(env, seed=42)
 # manual_control.start()
