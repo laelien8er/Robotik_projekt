@@ -1,5 +1,6 @@
 # initial Code from https://minigrid.farama.org/content/create_env_tutorial/
 
+
 from __future__ import annotations
 import json
 import numpy as np
