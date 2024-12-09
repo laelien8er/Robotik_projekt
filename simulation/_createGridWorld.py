@@ -25,7 +25,7 @@ class GridEnv(MiniGridEnv):
         with open(map_file, 'r') as file:
             self.map_data = json.load(file)
             size = self.map_data["size"]
-            agent_start_pos = (self.map_data["agent_x"], self.map_data["agent_x"])
+            agent_start_pos = (self.map_data["agent_x"], self.map_data["agent_y"])
 
         self.agent_start_pos = agent_start_pos
         self.agent_start_dir = agent_start_dir

@@ -86,5 +86,5 @@ start = (map_data['agent_x'], map_data['agent_y'])
 end = (map_data['goal_x'], map_data['goal_y'])
 grid = map_data['grid']
 
-p = AStarAlgorithm(start, end, grid, h='airplane').find_path()
+p = AStarAlgorithm(start, end, grid).find_path()
 print(p)

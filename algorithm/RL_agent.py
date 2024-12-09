@@ -50,6 +50,9 @@ env = ImgObsWrapper(env)
 model = PPO("CnnPolicy", env, policy_kwargs=policy_kwargs, verbose=1)
 model.learn(total_timesteps=25000)
 
+env.close()
+
+# open env to display agent
 env = GridEnv(render_mode="human", map_file=file_path)
 env = ImgObsWrapper(env)
 
