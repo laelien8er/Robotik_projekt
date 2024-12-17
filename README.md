@@ -16,8 +16,9 @@ Für Jupyter Notebooks: autoreload um Kernel nicht neustarten zu müssen :P
 %autoreload 2
 ```
 Klassendefinition:
+```python
 <alg>.find_path() -> [(x_start, y_start), ... , (x_end, y_end)]
-
+```
 
 
 Metriken:
