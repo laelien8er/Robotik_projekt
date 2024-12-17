@@ -15,3 +15,37 @@ Für Jupyter Notebooks: autoreload um Kernel nicht neustarten zu müssen :P
 %load_ext autoreload
 %autoreload 2
 ```
+Klassendefinition:
+```python
+<alg>.find_path() -> [(x_start, y_start), ... , (x_end, y_end)]
+```
+
+
+Metriken:
+- Zeitkomplexität
+- Speicherplatzkomplexität
+- Rechenzeit (Training; Zeit bis Weg gefunden)
+- Ressourcenverbrauch
+- Konvergenz / Zeit bis Konvergenz
+- Echtzeitfähig / Anytime --> kann er mit mehr Zeit was anfangen
+
+falls noch Zeit:
+- Optimierung / -fähigkeit
+- Robustheit
+- Lernfähigkeit (ja, nein)
+- (Erklärbarkeit)
+- globale / lokale Sicht
+
+Map Metriken:
+- Durchschnittliche Anzahl an Zuständen
+- Durchschnittlicher längster Pfad
+- (dynamisch absperrbare Gebiete)
+
+Bahn Metriken:
+- nähe zu Hindernis
+- kantig; glatt --> max. Drehwinkel
+
+Test:
+- Größe der Umgebung
+- Benchmark Umgebungen (basic und mit anderen kombiniert)
+
