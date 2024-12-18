@@ -49,6 +49,28 @@ def grid(data, row_labels, col_labels, ax=None, **kwargs):
     return im
 
 
+def get_actions(path, start):
+    # check if path is start to end
+    if path[0] != start:
+        path.reverse()
+
+    actions = []
+    p_last = path[0]
+    for p in path[1:]:
+        if p[1] == p_last[1]:
+            if p[0] < p_last[0]:
+                actions.append(2)  # step up
+            elif p[0] > p_last[0]:
+                actions.append(3)  # step down
+        elif p[0] == p_last[0]:
+            if p[1] > p_last[1]:
+                actions.append(0)  # step right
+            elif p[1] < p_last[1]:
+                actions.append(1)  # step left
+        p_last = p
+    return actions
+
+
 # ### Beispiel
 #
 # grid = [[0,0,0,0],
