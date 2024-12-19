@@ -6,11 +6,19 @@ from minigrid.wrappers import RGBImgPartialObsWrapper, ImgObsWrapper
 
 
 # get grid details
-file_path = "/home/lea/Dokumente/WS24_25/Robotik_projekt/simulation/grid_test.json"
+# file_path = "/home/lea/Dokumente/WS24_25/Robotik_projekt/simulation/grid_test.json"
+# file_path = 'C:/Users/julie/PycharmProjects/Robotik_projekt/simulation/grid_test.json'
 
 
+#file_path = "C:/Users/julie/PycharmProjects/Robotik_projekt/simulation/bottleneck_grid_128.json"
+file_path = "C:/Users/julie/PycharmProjects/Robotik_projekt/simulation/star_grid_128.json"
+#file_path = "C:/Users/julie/PycharmProjects/Robotik_projekt/simulation/doubletrap_grid_128.json"
+#file_path = "C:/Users/julie/PycharmProjects/Robotik_projekt/simulation/simple_grid_128.json"
+#file_path = "C:/Users/julie/PycharmProjects/Robotik_projekt/simulation/detour_grid_128.json"
+#file_path = "C:/Users/julie/PycharmProjects/Robotik_projekt/simulation/trap_grid_128.json"
 
-env = GridEnv(render_mode="human" , map_file=file_path)
+
+env = GridEnv(render_mode="human", map_file=file_path)
 observation, info = env.reset()
 
 
