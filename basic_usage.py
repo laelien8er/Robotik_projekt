@@ -1,16 +1,21 @@
-from simulation import GridEnv
 from algorithm import AStarAlgorithm
 import json
 from minigrid.manual_control import ManualControl
 from minigrid.wrappers import RGBImgPartialObsWrapper, ImgObsWrapper
 
+from simulation import GridWorldEnv
+
+
 
 # get grid details
 file_path = "/home/lea/Dokumente/WS24_25/Robotik_projekt/simulation/grid_test.json"
 
+# neues grid
+env = GridWorldEnv(render_mode="human", map_path=file_path)
 
 
-env = GridEnv(render_mode="human" , map_file=file_path)
+# altes grid:
+# env = GridEnv(render_mode="human" , map_file=file_path)
 observation, info = env.reset()
 
 
@@ -29,7 +34,7 @@ observation, info = env.reset()
 # manual_control = ManualControl(env, seed=42)
 # manual_control.start()
 
-
+#
 # sample actions
 episode_over = False
 while not episode_over:

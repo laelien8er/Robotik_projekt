@@ -1,5 +1,5 @@
-from simulation._createGridWorld import GridEnv
+from simulation.grid_world import GridWorldEnv
 
 __all__ =[
-    "GridEnv",
+    "GridWorldEnv",
 ]

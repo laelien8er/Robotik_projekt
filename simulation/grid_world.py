@@ -3,6 +3,7 @@ import gymnasium as gym
 from gymnasium import spaces
 import pygame
 import numpy as np
+import json
 
 
 class Actions(Enum):
@@ -14,13 +15,31 @@ class Actions(Enum):
 
 class GridWorldEnv(gym.Env):
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 4}
+    OBSTACLE: int = 1
 
-    def __init__(self, render_mode=None, size=5):
+    def __init__(self, render_mode=None,
+                 size=5,
+                 agent = None,
+                 goal = None,
+                 grid = None,
+                 map_path = None):
 
-        # ToDo: read map data; read size
+        if map_path:
+            with open(map_path, 'r') as file:
+                map_data = json.load(file)
+                size = map_data["size"]
+                agent = (map_data["agent_x"], map_data["agent_y"])
+                goal = (map_data["goal_x"], map_data["goal_y"])
+                grid = map_data["grid"]
 
         self.size = size  # The size of the square grid
         self.window_size = 512  # The size of the PyGame window
+        self.agent = agent # Start coordinates of agent (x,y)
+        self.goal = goal # coordinates of goal (x,y)
+        self.grid = grid # array of grid
+
+        np_grid  = np.array(self.grid).astype(int)
+        self.locs_obstacles = np.argwhere(np_grid == 1)
 
         # Observations are dictionaries with the agent's and the target's location.
         # Each location is encoded as an element of {0, ..., `size`}^2,
@@ -74,19 +93,12 @@ class GridWorldEnv(gym.Env):
         # We need the following line to seed self.np_random
         super().reset(seed=seed)
 
-        # ToDo: implement custom agent and target location from map
-
         # Choose the agent's location uniformly at random
-        self._agent_location = self.np_random.integers(0, self.size, size=2, dtype=int)
+        self._agent_location = np.array([self.agent[0], self.agent[1]])
 
         # We will sample the target's location randomly until it does not
         # coincide with the agent's location
-        self._target_location = self._agent_location
-        while np.array_equal(self._target_location, self._agent_location):
-            self._target_location = self.np_random.integers(
-                0, self.size, size=2, dtype=int
-            )
-
+        self._target_location = np.array([self.goal[0], self.goal[1]])
         observation = self._get_obs()
         info = self._get_info()
 
@@ -99,12 +111,30 @@ class GridWorldEnv(gym.Env):
         # Map the action (element of {0,1,2,3}) to the direction we walk in
         direction = self._action_to_direction[action]
         # We use `np.clip` to make sure we don't leave the grid
-        self._agent_location = np.clip(
-            self._agent_location + direction, 0, self.size - 1
-        )
-        # An episode is done iff the agent has reached the target
+
+        # check if the agent hit obstical
+        hit_obstacle = False
+        next = self._agent_location + direction
+        next_loc = np.array([next[1], next[0]])
+        if next_loc.tolist() in self.locs_obstacles.tolist():
+            self._agent_location = self._agent_location
+            hit_obstacle= True
+        else:
+            self._agent_location = np.clip(
+                self._agent_location + direction, 0, self.size - 1
+            )
+        # An episode is done if the agent has reached the target
         terminated = np.array_equal(self._agent_location, self._target_location)
-        reward = 1 if terminated else 0  # Binary sparse rewards
+
+        # Rewards
+        if terminated:
+            reward = 100
+        elif hit_obstacle:
+            # get small punishment if obstical is hit
+            reward = -5
+        else:
+            reward = -1
+
         observation = self._get_obs()
         info = self._get_info()
 
@@ -126,7 +156,7 @@ class GridWorldEnv(gym.Env):
             self.clock = pygame.time.Clock()
 
         canvas = pygame.Surface((self.window_size, self.window_size))
-        canvas.fill((255, 255, 255))
+        canvas.fill((241, 226, 226))
         pix_square_size = (
             self.window_size / self.size
         )  # The size of a single grid square in pixels
@@ -134,7 +164,7 @@ class GridWorldEnv(gym.Env):
         # First we draw the target
         pygame.draw.rect(
             canvas,
-            (255, 0, 0),
+            (198, 133, 141),
             pygame.Rect(
                 pix_square_size * self._target_location,
                 (pix_square_size, pix_square_size),
@@ -143,23 +173,34 @@ class GridWorldEnv(gym.Env):
         # Now we draw the agent
         pygame.draw.circle(
             canvas,
-            (0, 0, 255),
+            (188, 162, 170),
             (self._agent_location + 0.5) * pix_square_size,
             pix_square_size / 3,
         )
+
+        # draw obstacles
+        for loc in self.locs_obstacles:
+            pygame.draw.rect(
+                canvas,
+                (232, 175, 148),
+                pygame.Rect(
+                    pix_square_size * np.array([loc[1], loc[0]]),
+                    (pix_square_size, pix_square_size),
+                ),
+            )
 
         # Finally, add some gridlines
         for x in range(self.size + 1):
             pygame.draw.line(
                 canvas,
-                0,
+                (220,204,165),
                 (0, pix_square_size * x),
                 (self.window_size, pix_square_size * x),
                 width=3,
             )
             pygame.draw.line(
                 canvas,
-                0,
+                (220,204,165),
                 (pix_square_size * x, 0),
                 (pix_square_size * x, self.window_size),
                 width=3,
