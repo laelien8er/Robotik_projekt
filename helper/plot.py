@@ -1,6 +1,8 @@
 from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
 import matplotlib.pyplot as plt
+from simulation import CreateGrid
+from algorithm import AStarAlgorithm
 
 
 def get_grid_img(grid, agent, goal, path=False):
@@ -34,6 +36,32 @@ def get_grid(data, ax=None, **kwargs):
 
     return im
 
+def create_show_grid(algorithm: str = False, grid: str = 'detour_grid', size_grid: int = 32):
+    if algorithm == 'A-stern':
+        alg = AStarAlgorithm()
+
+    # ToDo
+    # elif algorithm == 'Wavefront':
+    #     alg =
+    # elif algorithm == tbd:
+    #     alg =
+    else:
+        print(f"Algorithm {algorithm} not found")
+        return False
+
+    grid_creator = CreateGrid()
+    grid_dict = grid_creator.create_grid(grid, size_grid)
+
+    start = (grid_dict['agent_x'], grid_dict['agent_y'])
+    end = (grid_dict['goal_x'], grid_dict['goal_y'])
+    grid = grid_dict['grid']
+
+
+    path, _ = alg.find_path(start, end, grid)
+
+    data = get_grid_img(grid, start, end, path)
+
+    return data
 
 def get_actions(path, start):
     # check if path is start to end

@@ -34,7 +34,7 @@ class AStarAlgorithm:
 
             if best_node[0] == self.end_node:
                 self.list_closed.append(best_node)
-                return self.get_path()
+                return self.get_path(), self.step_count
 
             # Add best_node to closed list
             self.list_closed.append(best_node)
@@ -74,10 +74,10 @@ class AStarAlgorithm:
                     self.list_open[idx][3] = best_node[0]
                 else:
                     # Add to open list
-                    self.list_open.append([neighbor, g_new, fl, best_node[0]])
+                    self.list_open.append([neighbor, g_new, f, best_node[0]])
 
         # no path was found
-        return False
+        return False, self.step_count
 
     def neighbors(self, node):
         row, column = node[0][0], node[0][1]
