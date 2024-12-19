@@ -33,11 +33,16 @@ class MeetInTheMiddleAlgorithm:
         queue_start = deque([(agent_x, agent_y)])
         queue_goal = deque([(goal_x, goal_y)])
 
+        # zähle wie oft er sich erweitern muss bis er den weg findet 
+        expansion_count = 0
+
         # bfs solange queue nicht leer
         while queue_start and queue_goal:
             # expandieren von start aus
             if queue_start:
                 x, y = queue_start.popleft()
+                expansions_count += 1  # start-seite hat knoten erweitert
+
                 # alle möglichen nachbarn in die 4 richtungen
                 for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
                     nx, ny = x + dx, y + dy
@@ -55,6 +60,8 @@ class MeetInTheMiddleAlgorithm:
             # expandieren von goal aus
             if queue_goal:
                 x, y = queue_goal.popleft()
+                expansions_count += 1  # ziel-seite hat knoten erweitert
+
                 # alle möglichen nachbarn in die 4 richtungen
                 for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
                     nx, ny = x + dx, y + dy
@@ -66,8 +73,10 @@ class MeetInTheMiddleAlgorithm:
                             queue_goal.append((nx, ny))
                             # treffen sie sich
                             if distance_from_start[nx][ny] != float('inf'):
-                                return self.find_path(parent_from_start, parent_from_goal, (nx, ny), self.start,
+                                pfad = self.find_path(parent_from_start, parent_from_goal, (nx, ny), self.start,
                                                       self.goal)
+                                
+                                return pfad, expansion_count
 
         # kein pfad gefunden
         return None
