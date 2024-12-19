@@ -64,12 +64,12 @@ class CreateGrid:
                 return x, y
 
     def create_star_grid(self, size, save_grid=False):
-        # Erstellen des leeren Grids
+        # erstelle leeres grid
         self.size = size
         self.grid = self.create_empty_grid()
 
-        # Dynamische Parameter für das Muster
-        # Unten rechts (l1)
+        # dynamische parameter fürs muster
+        # unten rechts 
         l1_x = self.size - self.size // 3
         l1_y = self.size - self.size // 4
         l1_length = self.size // 4
@@ -83,7 +83,7 @@ class CreateGrid:
             for y in range(l1_y, min(l1_y + l1_length, size)):
                 self.grid[x][y] = 1
 
-        # Oben links (l2)
+        # oben links
         l2_x = size // 10
         l2_y = size // 5
         l2_length = size // 4
@@ -99,11 +99,11 @@ class CreateGrid:
 
         self.grid = self.add_padding()
 
-        # Bestimmen der Positionen für Agent und Ziel
+        # bestimmen der positionen für agent und goal
         agent_x, agent_y = self.get_free_position_in_top_left()
         goal_x, goal_y = self.get_free_position_in_bottom_right()
 
-        # Grid speichern, wenn der Parameter aktiviert ist
+        # grid speichern, wenn aktiviert
         if save_grid:
             save_grid_to_file({
                 "name": "detour",
@@ -115,7 +115,7 @@ class CreateGrid:
                 "grid": self.grid
             })
 
-        # Rückgabe des Grids mit Metadaten
+        # rückgabe des grids mit metadaten
         return {
             "name": "detour",
             "agent_x": agent_x,
@@ -127,7 +127,7 @@ class CreateGrid:
         }
 
     def create_simple_grid(self, size, save_grid=False):
-        # Erstellen eines leeren Grids
+        # erstellen leeres grid
         self.size = size
         self.grid = self.create_empty_grid()
 
@@ -135,34 +135,35 @@ class CreateGrid:
 
         rectangles = []
         for _ in range(num_rect):
-            max_attempts = 100  # Verhindert Endlosschleifen
+            # anzahl retries die rechtecke zu platzieren
+            max_attempts = 100 
             attempts = 0
             while attempts < max_attempts:
-                # Dimensionen der Rechtecke proportional zur Größe des Grids
+                # dims der rechtecke proportional zu größe des grids
                 rect_width = random.randint(size // 10, size // 4)
                 rect_height = random.randint(size // 10, size // 4)
 
-                # Positionen der Rechtecke innerhalb des zentralen Bereichs des Grids
+                # positionen der rechtecke innerhalb des zentrums vom grid
                 rect_x = random.randint(size // 4, 3 * size // 4 - rect_width - 1)
                 rect_y = random.randint(size // 4, 3 * size // 4 - rect_height - 1)
 
-                # Überprüfen, ob das Rechteck keinen anderen Rechtecken zu nahe kommt
+                # überprüfen, ob das rechteck den anderen nicht zu nahe kommt >> keine überschneidungen
                 valid_position = True
                 for existing_rect in rectangles:
                     ex_x, ex_y, ex_width, ex_height = existing_rect
 
-                    # Prüfen auf Überschneidung mit einem Puffer von 1 Pixel
-                    if not (rect_x >= ex_x + ex_width + 1 or  # rechts vom bestehenden Rechteck
-                            rect_x + rect_width + 1 <= ex_x or  # links vom bestehenden Rechteck
-                            rect_y >= ex_y + ex_height + 1 or  # unterhalb des bestehenden Rechtecks
-                            rect_y + rect_height + 1 <= ex_y):  # oberhalb des bestehenden Rechtecks
+                    # prüfen auf überschneidungen mit puffer von 1 pixel
+                    if not (rect_x >= ex_x + ex_width + 1 or  # rechts vom existierenden rechteck
+                            rect_x + rect_width + 1 <= ex_x or  # links vom existierenden rechteck
+                            rect_y >= ex_y + ex_height + 1 or  # unterhalb vom existierenden rechteck
+                            rect_y + rect_height + 1 <= ex_y):  # oberhalb vom existierendne rechteck
                         valid_position = False
                         break
 
                 if valid_position:
                     rectangles.append((rect_x, rect_y, rect_width, rect_height))
 
-                    # Rechteck im Grid markieren
+                    # rechteck im grid markieren
                     for x in range(rect_x, rect_x + rect_width):
                         for y in range(rect_y, rect_y + rect_height):
                             self.grid[x][y] = 1
@@ -180,7 +181,7 @@ class CreateGrid:
         goal_x, goal_y = self.place_goal()
 
 
-        # Grid speichern, wenn der Parameter aktiviert ist
+        # grid speichern, wenn parameter aktiviert
         if save_grid:
             save_grid_to_file({
                 "name": "detour",
@@ -192,7 +193,7 @@ class CreateGrid:
                 "grid": self.grid
             })
 
-        # Rückgabe des Grids mit Metadaten
+        # rückgabe des grids mit metadaten
         return {
             "name": "detour",
             "agent_x": agent_x,
@@ -207,26 +208,25 @@ class CreateGrid:
         self.size = size
         self.grid = self.create_empty_grid()
 
-        # Blockierter Balken
-        balken_x = size // 3  # Position des Balkens
-        balken_dicke = max(1, size // 2)  # Dicke des Balkens proportional zur Größe
-
+        # blockiere balken
+        balken_x = size // 3  # position des balken
+        balken_dicke = max(1, size // 2)  # dicke des balkens proportional zu größe
         for y in range(size):
             for x in range(balken_x, balken_x + balken_dicke):
                 self.grid[x][y] = 1
 
-        bottleneck_width_top = max(1, size // 12)  # Enger Bereich oben
-        bottleneck_width_bottom = max(1, size // 6)  # Breiterer Bereich unten
-        bottleneck_y_center = size // 2  # Zentrale Position des Weges
+        bottleneck_width_top = max(1, size // 12)  # enger bereich
+        bottleneck_width_bottom = max(1, size // 6)  # breiter bereich
+        bottleneck_y_center = size // 2  # weg zentral
 
-        # Obere schmale Passage
+        # schmaler bereich
         for y in range(bottleneck_y_center - bottleneck_width_top // 2,
                        bottleneck_y_center + (bottleneck_width_top + 1) // 2):
             for x in range(balken_x, balken_x + balken_dicke // 2):
                 if 0 <= y < size:
                     self.grid[x][y] = 0
 
-        # Untere breitere Passage
+        # untere breiterer bereich
         for y in range(bottleneck_y_center - bottleneck_width_bottom // 2,
                        bottleneck_y_center + (bottleneck_width_bottom + 1) // 2):
             for x in range(balken_x + balken_dicke // 2, balken_x + balken_dicke):
@@ -238,7 +238,7 @@ class CreateGrid:
         agent_x, agent_y = self.place_agent()
         goal_x, goal_y = self.place_goal()
 
-        # Grid speichern, wenn der Parameter aktiviert ist
+        # grid speichern, wenn parameter aktiviert
         if save_grid:
             save_grid_to_file({
                 "name": "detour",
@@ -250,7 +250,7 @@ class CreateGrid:
                 "grid": self.grid
             })
 
-        # Rückgabe des Grids mit Metadaten
+        # rückgabe des grids mit metadaten
         return {
             "name": "detour",
             "agent_x": agent_x,
@@ -265,25 +265,25 @@ class CreateGrid:
         self.size = size
         self.grid = self.create_empty_grid()
 
-        # Definieren der Rechtecksgrenzen dynamisch basierend auf der Größe
+        # rechteck dynamisch definieren basierend auf größe des grids
         rect_start_x = size // 5
         rect_start_y = size // 5
         rect_end_x = size - size // 5
         rect_end_y = size - size // 5
 
-        # Rechteck zeichnen
+        # rechteck markieren 
         for x in range(rect_start_x, rect_end_x):
             for y in range(rect_start_y, rect_end_y):
                 self.grid[x][y] = 1
 
-        # Dynamisches Loch innerhalb des Rechtecks erstellen (Buchtform)
+        # bucht erstellen innerhalb des rechtecks
         hole_width = random.randint((rect_end_y - rect_start_y) // 3, (rect_end_y - rect_start_y) // 2)
         hole_height = random.randint((rect_end_x - rect_start_x) // 4, (rect_end_x - rect_start_x) // 2)
 
-        # Loch mittig am oberen Rand des Rechtecks platzieren
+        # bucht mittig am oberen rand platzieren
         hole_start_x = rect_start_x
-        hole_start_y = rect_start_y + (rect_end_y - rect_start_y - hole_width) // 2  # Loch beginnt oben am Rechteck
-
+        hole_start_y = rect_start_y + (rect_end_y - rect_start_y - hole_width) // 2 # beginnt oben am rechteck
+        
         for x in range(hole_start_x, hole_start_x + hole_width):
             for y in range(hole_start_y, hole_start_y + hole_height):
                 if rect_start_x <= x < rect_end_x and rect_start_y <= y < rect_end_y:
@@ -292,13 +292,10 @@ class CreateGrid:
 
         self.grid = self.add_padding()
 
-        # Position des Agenten (oben im Grid, außerhalb des Rechtecks)
         agent_x, agent_y = self.place_agent()
-
-        # Position des Ziels (unten im Grid, außerhalb des Rechtecks)
         goal_x, goal_y = self.place_goal()
 
-        # Grid speichern, wenn der Parameter aktiviert ist
+        # grid speichern, wenn parameter aktiviert
         if save_grid:
             save_grid_to_file({
                 "name": "detour",
@@ -310,7 +307,7 @@ class CreateGrid:
                 "grid": self.grid
             })
 
-        # Rückgabe des Grids mit Metadaten
+        # rückgabe des grids mit metadaten
         return {
             "name": "detour",
             "agent_x": agent_x,
@@ -325,32 +322,32 @@ class CreateGrid:
         self.size = size
         self.grid = self.create_empty_grid()
 
-
-        # Dynamische Rechtecksgrenzen basierend auf der Größe
+        # rechteck dynamisch groß basierend auf größe des grids
         rect_start_x = size // 5
         rect_start_y = size // 5
         rect_end_x = size - size // 5
         rect_end_y = size - size // 5
 
-        # Rechteck zeichnen
+        # rechteck markieren
         for x in range(rect_start_x, rect_end_x):
             for y in range(rect_start_y, rect_end_y):
                 self.grid[x][y] = 1
 
-        # Erste Falle dynamisch erstellen
+        # erste falle dynamisch erstellen
         hole_width = random.randint((rect_end_y - rect_start_y) // 4, (rect_end_y - rect_start_y) // 2)
         hole_height = random.randint((rect_end_x - rect_start_x) // 4, (rect_end_x - rect_start_x) // 2)
 
-        # Loch mittig am oberen Rand des Rechtecks platzieren
+        # lock mittig am oberen rand des rechtecks platzieren
         hole_start_x = rect_start_x
-        hole_start_y = rect_start_y + (rect_end_y - rect_start_y - hole_width) // 2  # Loch beginnt oben am Rechteck
-
+        hole_start_y = rect_start_y + (rect_end_y - rect_start_y - hole_width) // 2  # beginnt oben am rechteck
+        
         for x in range(hole_start_x, hole_start_x + hole_width):
             for y in range(hole_start_y, hole_start_y + hole_height):
                 if rect_start_x <= x < rect_end_x and rect_start_y <= y < rect_end_y:
+                    self.grid[x - 1][y - 1] = 1 # border, dass sie keinen gang bilden
                     self.grid[x][y] = 0
 
-        # Zweite Falle (gespiegelt) dynamisch erstellen
+        # zweite falle dynamisch erstellen
         hole_start_x_mirror = rect_end_x - (hole_start_x + hole_width - rect_start_x)
         hole_start_y_mirror = rect_end_y - (hole_start_y + hole_height - rect_start_y)
         hole_width_mirror = hole_width
@@ -363,13 +360,10 @@ class CreateGrid:
 
         self.grid = self.add_padding()
 
-        # Position des Agenten (oben im Grid, außerhalb des Rechtecks)
         agent_x, agent_y = self.place_agent()
-
-        # Position des Ziels (unten im Grid, außerhalb des Rechtecks)
         goal_x, goal_y = self.place_goal()
 
-        # Grid speichern, wenn der Parameter aktiviert ist
+        # grid speicher, wenn der parameter aktiviert
         if save_grid:
             save_grid_to_file({
                 "name": "detour",
@@ -381,7 +375,7 @@ class CreateGrid:
                 "grid": self.grid
             })
 
-        # Rückgabe des Grids mit Metadaten
+        # rückgabe des grids mit metadaten
         return {
             "name": "detour",
             "agent_x": agent_x,
@@ -392,53 +386,51 @@ class CreateGrid:
             "grid": self.grid
         }
 
-    def create_detour_grid(self, size, save_grid=False):  ## funzt noch ned auf 16 byye
+    def create_detour_grid(self, size, save_grid=False): 
         self.size = size
         self.grid = self.create_empty_grid()
 
-        # Definieren der Rechtecksgrenzen für die Hindernisse oben und unten
+        # rechteck für hinderniss definieren basierend auf größe des grids
         rect_start_x = size // 5
         rect_start_y = 0
         rect_end_x = size - size // 5
         rect_end_y = size - size // 5
 
-        # Rechtecke zeichnen
+        # rechteck markieren
         for x in range(rect_start_x, rect_end_x):
             for y in range(rect_start_y, rect_end_y):
                 self.grid[x][y] = 1
 
-        # Vertikales Zickzack-Muster innerhalb des Rechtecks
-        zickzack_depth = (rect_end_y - rect_start_y) // 4  # Tiefe der Zickzack-Spitzen
-        zickzack_width = (rect_end_x - rect_start_x) // 7  # Breite der Zickzack-Abschnitte
-
+        # zickzack innerhalb des rechtecks
+        zickzack_depth = (rect_end_y - rect_start_y) // 4  # tiefe zickzack spitze
+        zickzack_width = (rect_end_x - rect_start_x) // 7  # breite zickzack muster
+        
         for i in range(10):
             center_y = rect_start_y + (rect_end_y - rect_start_y) // 3
-            if i % 2 == 0:  # Zick (nach links in das Hindernis)
+            if i % 2 == 0:  # zick >> nach links in das hindernis 
                 for x in range(rect_start_x + i * zickzack_width, rect_start_x + (i + 1) * zickzack_width):
                     y_spike = center_y - zickzack_depth // 2
-                    self.grid[x][y_spike] = 0  # Spitze
+                    self.grid[x][y_spike] = 0  # spitze
                     self.grid[x + 1][y_spike] = 0
                 for y in range(center_y - zickzack_depth // 2, center_y + zickzack_depth // 2):
                     self.grid[rect_start_x + i * zickzack_width][y] = 0
-            else:  # Zack (nach rechts in das Hindernis)
+            else:  # zack >> nach recht in das hindernis 
                 for x in range(rect_start_x + i * zickzack_width, rect_start_x + (i + 1) * zickzack_width):
                     y_spike = center_y + zickzack_depth // 2
-                    self.grid[x][y_spike] = 0  # Spitze
+                    self.grid[x][y_spike] = 0  # spitze
                     self.grid[x + 1][y_spike - 1] = 0
                 for y in range(center_y - zickzack_depth // 2, center_y + zickzack_depth // 2):
                     self.grid[rect_start_x + i * zickzack_width][y] = 0
 
         self.grid = self.add_padding()
 
-        # Position des Agenten (oben links im Zickzack-Bereich)
         agent_x, agent_y = self.place_agent()
-        agent_y = agent_y // 4
+        agent_y = agent_y // 4 # soll links sitzen
 
-        # Position des Ziels (unten rechts im Zickzack-Bereich)
         goal_x, goal_y = self.place_goal()
-        goal_y = goal_y // 4
+        goal_y = goal_y // 4 # soll links sitzen
 
-        # Grid speichern, wenn der Parameter aktiviert ist
+        # grid speichern wenn parameter aktiviert
         if save_grid:
             save_grid_to_file({
                 "name": "detour",
@@ -450,7 +442,7 @@ class CreateGrid:
                 "grid": self.grid
             })
 
-        # Rückgabe des Grids mit Metadaten
+        # rückgabe des grids mit metadaten
         return {
             "name": "detour",
             "agent_x": agent_x,
@@ -467,13 +459,10 @@ class CreateGrid:
 
         self.grid = self.add_padding()
 
-        # Position des Agenten
         agent_x, agent_y = self.place_agent()
-
-        # Position des Ziels
         goal_x, goal_y = self.place_goal()
 
-        # Grid speichern, wenn der Parameter aktiviert ist
+        # grid speichern, wenn der parameter aktiviert
         if save_grid:
             save_grid_to_file({
                 "name": "detour",
@@ -485,7 +474,7 @@ class CreateGrid:
                 "grid": self.grid
             })
 
-        # Rückgabe des Grids mit Metadaten
+        # rückgabe des grids mit metadaten
         return {
             "name": "detour",
             "agent_x": agent_x,
