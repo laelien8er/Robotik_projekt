@@ -136,7 +136,7 @@ class CreateGrid:
         rectangles = []
         for _ in range(num_rect):
             # anzahl retries die rechtecke zu platzieren
-            max_attempts = 5
+            max_attempts = 100
             attempts = 0
             while attempts < max_attempts:
                 # dims der rechtecke proportional zu größe des grids
