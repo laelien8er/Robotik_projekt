@@ -97,7 +97,7 @@ class QLearning:
         std_reward = np.std(episode_rewards)
 
         # path is last path generated
-        return mean_reward, std_reward, path
+        return mean_reward, std_reward
 
 
 

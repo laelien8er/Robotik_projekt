@@ -7,10 +7,12 @@ class WavefrontAlgorithm:
         self.goal = 0
         self.rows = 0
         self.cols = 0
+        self.count = 0
 
 
     def wavefront(self):
 
+        self.count = 0
         # init distanz und parent
         self.distance = [[float('inf')] * self.cols for _ in range(self.rows)]
         self.parent = [[None] * self.cols for _ in range(self.rows)]
@@ -31,6 +33,8 @@ class WavefrontAlgorithm:
 
         # bfs wavefront ausführen
         while queue:
+            self.count += 1
+
             x, y = queue.popleft()
 
             # wenn goal erreicht, abbruch
@@ -81,4 +85,4 @@ class WavefrontAlgorithm:
         # pfad umkehren >> da aufgebaut von goal zu start
         path.reverse()
 
-        return path, distance
+        return path, self.count

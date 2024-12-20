@@ -22,7 +22,8 @@ class GridWorldEnv(gym.Env):
                  agent = None,
                  goal = None,
                  grid = None,
-                 map_path = None):
+                 map_path = None,
+                 map_dict = None):
 
         if map_path:
             with open(map_path, 'r') as file:
@@ -31,6 +32,12 @@ class GridWorldEnv(gym.Env):
                 agent = (map_data["agent_x"], map_data["agent_y"])
                 goal = (map_data["goal_x"], map_data["goal_y"])
                 grid = map_data["grid"]
+
+        elif map_dict:
+            size = map_dict['size']
+            agent = (map_dict["agent_x"], map_dict["agent_y"])
+            goal = (map_dict["goal_x"], map_dict["goal_y"])
+            grid = map_dict["grid"]
 
         self.size = size  # The size of the square grid
         self.window_size = 512  # The size of the PyGame window
