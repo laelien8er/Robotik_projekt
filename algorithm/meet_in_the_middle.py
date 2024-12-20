@@ -1,5 +1,4 @@
 from collections import deque
-
 from torch.nn.functional import grid_sample
 
 

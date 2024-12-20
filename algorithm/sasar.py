@@ -85,24 +85,25 @@ class SASAR:
             step = 0
             done = False
             total_rewards_ep = 0
+            action = np.argmax(self.q_table[state][:])
 
             for step in range(max_steps):
-                # Take the action (index) that have the maximum reward
-                action = np.argmax(self.q_table[state][:])
+
                 observation, reward, done, _, _ = self.env.step(action)
-                path.append(observation['agent'].tolist())
                 new_state = self.get_state(observation['agent'])
+                new_action = self.greedy_policy(new_state)
 
                 total_rewards_ep += reward
 
                 if done:
                     break
+
                 state = new_state
+                action = new_action
             episode_rewards.append(total_rewards_ep)
         mean_reward = np.mean(episode_rewards)
         std_reward = np.std(episode_rewards)
 
-        # path is last path generated
         return mean_reward, std_reward
 
 

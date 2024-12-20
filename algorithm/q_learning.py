@@ -1,7 +1,6 @@
 import numpy as np
 import gymnasium as gym
 import random
-import imageio
 from tqdm.notebook import trange
 
 
@@ -88,7 +87,6 @@ class QLearning:
                 # Take the action (index) that have the maximum reward
                 action = np.argmax(self.q_table[state][:])
                 observation, reward, done, _, _ = self.env.step(action)
-                path.append(observation['agent'].tolist())
                 new_state = self.get_state(observation['agent'])
 
                 total_rewards_ep += reward
@@ -100,7 +98,6 @@ class QLearning:
         mean_reward = np.mean(episode_rewards)
         std_reward = np.std(episode_rewards)
 
-        # path is last path generated
         return mean_reward, std_reward
 
 
