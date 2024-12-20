@@ -344,8 +344,8 @@ class CreateGrid:
         for x in range(hole_start_x, hole_start_x + hole_width):
             for y in range(hole_start_y, hole_start_y + hole_height):
                 if rect_start_x <= x < rect_end_x and rect_start_y <= y < rect_end_y:
-                    self.grid[x - 1][y - 1] = 1 # border, dass sie keinen gang bilden
-                    self.grid[x][y] = 0
+                    self.grid[x - 1][y - 1] = 0 # border, dass sie keinen gang bilden
+                    self.grid[x][y] = 1
 
         # zweite falle dynamisch erstellen
         hole_start_x_mirror = rect_end_x - (hole_start_x + hole_width - rect_start_x)
