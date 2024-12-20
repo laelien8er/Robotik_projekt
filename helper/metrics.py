@@ -13,7 +13,7 @@ class Metrics:
     def get_metrics(self, algorithm: str = False, size_grid: int = 32, num_runs: int = 5):
         alg = None
 
-        measurements = pd.DataFrame(columns=['benchmark', 'avg_time (sec)', 'avg_path_length', 'avg_steps_to_converge'
+        measurements = pd.DataFrame(columns=['benchmark', 'avg_time (sec)', 'avg_path_length', 'avg_steps_to_converge',
                                                                                                'avg_distance'])
 
         # measurements for each algorithm
@@ -66,7 +66,7 @@ class Metrics:
             all_path_lengths.extend(path_lengths)
             all_steps.extend(steps)
 
-            row = pd.DataFrame([[b, times, path_lengths, steps]], columns=measurements.columns)
+            row = pd.DataFrame([[b, times, path_lengths, steps, distances]], columns=measurements.columns)
             measurements = pd.concat([measurements, row], ignore_index=True)
 
         row = pd.DataFrame([['all', all_times, all_path_lengths, all_steps, all_distances]], columns=measurements.columns)
@@ -80,6 +80,7 @@ class Metrics:
 
     def average_distance_to_obstacles(self, path, grid):
         # alle blockierten zellen finden
+        grid = np.array((grid))
         blocked_indices = np.argwhere(grid)
 
         if blocked_indices.size == 0:
