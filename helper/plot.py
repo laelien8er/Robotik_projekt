@@ -2,7 +2,7 @@ from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
 import matplotlib.pyplot as plt
 from simulation import CreateGrid
-from algorithm import AStarAlgorithm
+from algorithm import AStarAlgorithm, WavefrontAlgorithm, MeetInTheMiddleAlgorithm
 
 
 def get_grid_img(grid, agent, goal, path=False):
@@ -37,14 +37,13 @@ def get_grid(data, ax=None, **kwargs):
     return im
 
 def create_show_grid(algorithm: str = False, grid: str = 'detour_grid', size_grid: int = 32):
-    if algorithm == 'A-stern':
-        alg = AStarAlgorithm()
 
-    # ToDo
-    # elif algorithm == 'Wavefront':
-    #     alg =
-    # elif algorithm == tbd:
-    #     alg =
+    if algorithm == 'A-star':
+        alg = AStarAlgorithm()
+    elif algorithm == 'Wavefront':
+        alg = WavefrontAlgorithm()
+    elif algorithm == 'MITM':
+        alg = MeetInTheMiddleAlgorithm()
     else:
         print(f"Algorithm {algorithm} not found")
         return False
@@ -85,12 +84,3 @@ def get_actions(path, start):
     return actions
 
 
-### Beispiel
-
-# data = get_grid_img(grid, agent, goal, path)
-#
-# fig, ax = plt.subplots()
-# im = get_grid(data,  ax=ax)
-# fig.tight_layout()
-# plt.axis('off')
-# plt.show()

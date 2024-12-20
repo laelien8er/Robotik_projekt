@@ -1,11 +1,13 @@
 from collections import deque
 
+from torch.nn.functional import grid_sample
+
 
 class MeetInTheMiddleAlgorithm:
-    def __init__(self, grid, start, goal):
-        self.grid = grid
-        self.start = start
-        self.goal = goal
+    def __init__(self):
+        self.grid = []
+        self.start = 0
+        self.goal = 0
 
     def meet_in_the_middle(self):
         # anzahl zeilen und spalten bestimmen
@@ -41,7 +43,7 @@ class MeetInTheMiddleAlgorithm:
             # expandieren von start aus
             if queue_start:
                 x, y = queue_start.popleft()
-                expansions_count += 1  # start-seite hat knoten erweitert
+                expansion_count += 1  # start-seite hat knoten erweitert
 
                 # alle möglichen nachbarn in die 4 richtungen
                 for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
@@ -54,13 +56,15 @@ class MeetInTheMiddleAlgorithm:
                             queue_start.append((nx, ny))
                             # treffen sie sich
                             if distance_from_goal[nx][ny] != float('inf'):
-                                return self.find_path(parent_from_start, parent_from_goal, (nx, ny), self.start,
-                                                      self.goal)
+                                pfad = self.get_path(parent_from_start, parent_from_goal, (nx, ny), self.start,
+                                                     self.goal)
+
+                                return pfad, expansion_count
 
             # expandieren von goal aus
             if queue_goal:
                 x, y = queue_goal.popleft()
-                expansions_count += 1  # ziel-seite hat knoten erweitert
+                expansion_count += 1  # ziel-seite hat knoten erweitert
 
                 # alle möglichen nachbarn in die 4 richtungen
                 for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
@@ -73,15 +77,16 @@ class MeetInTheMiddleAlgorithm:
                             queue_goal.append((nx, ny))
                             # treffen sie sich
                             if distance_from_start[nx][ny] != float('inf'):
-                                pfad = self.find_path(parent_from_start, parent_from_goal, (nx, ny), self.start,
+                                pfad = self.get_path(parent_from_start, parent_from_goal, (nx, ny), self.start,
                                                       self.goal)
                                 
                                 return pfad, expansion_count
 
         # kein pfad gefunden
-        return None
+        return None, expansion_count
 
-    def find_path(self, parent_from_start, parent_from_goal, meet_point, start, goal):
+    def get_path(self, parent_from_start, parent_from_goal, meet_point, start, goal):
+
         (meeting_p_x, meeting_p_y) = meet_point
 
         # pfad von start zu meetingpoint rekonstruieren
@@ -105,3 +110,11 @@ class MeetInTheMiddleAlgorithm:
 
         # ganzer pfad
         return path_from_start + [(meeting_p_x, meeting_p_y)] + path_from_goal
+
+    def find_path(self, start, goal, grid):
+        self.grid = grid
+        self.start = start
+        self.goal = goal
+
+        path, count = self.meet_in_the_middle()
+        return path, count

@@ -1,13 +1,15 @@
 from collections import deque
 
-
 class WavefrontAlgorithm:
-    def __init__(self, grid, start, goal):
-        self.grid = grid
-        self.start = start
-        self.goal = goal
-        self.rows = len(grid)
-        self.cols = len(grid[0])
+    def __init__(self):
+        self.grid = []
+        self.start = 0
+        self.goal = 0
+        self.rows = 0
+        self.cols = 0
+
+
+    def wavefront(self):
 
         # init distanz und parent
         self.distance = [[float('inf')] * self.cols for _ in range(self.rows)]
@@ -21,7 +23,6 @@ class WavefrontAlgorithm:
         if self.grid[self.agent_x][self.agent_y] or self.grid[self.goal_x][self.goal_y]:
             raise ValueError("Start oder Ziel ist blockiert.")
 
-    def wavefront(self):
         # distanz des starts auf 0 setzen
         self.distance[self.agent_x][self.agent_y] = 0
 
@@ -54,23 +55,30 @@ class WavefrontAlgorithm:
         return self.distance, self.parent
 
 
-def find_path(parent, start, goal):
-    path = []
+    def find_path(self, start, goal, grid):
+        self.start = start
+        self.goal = goal
+        self.grid = grid
+        self.rows = len(grid)
+        self.cols = len(grid[0])
 
-    # starte mit goalknoten
-    x, y = goal
+        distance, parent = self.wavefront()
+        path = []
 
-    # zurückverfolgen bis man beim startknoten ankommt
-    while (x, y) != start:
-        # aktuellen knoten zum pfad hinzufügen
-        path.append((x, y))
+        # starte mit goalknoten
+        x, y = goal
 
-        # zum parentknoten des aktuellen knotens gehen
-        x, y = parent[x][y]
+        # zurückverfolgen bis man beim startknoten ankommt
+        while (x, y) != start:
+            # aktuellen knoten zum pfad hinzufügen
+            path.append((x, y))
 
-    path.append(start)
+            # zum parentknoten des aktuellen knotens gehen
+            x, y = parent[x][y]
 
-    # pfad umkehren >> da aufgebaut von goal zu start
-    path.reverse()
+        path.append(start)
 
-    return path
+        # pfad umkehren >> da aufgebaut von goal zu start
+        path.reverse()
+
+        return path, distance
