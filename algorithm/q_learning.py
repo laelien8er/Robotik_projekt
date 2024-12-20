@@ -27,6 +27,10 @@ class QLearning:
             action = self.env.action_space.sample()
         return action
 
+    def greedy_policy(self,state):
+        action = np.argmax(self.q_table[state])
+        return action
+
     def train(self,
               n_training_episodes,
               min_epsilon,

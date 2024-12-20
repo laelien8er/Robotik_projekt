@@ -28,13 +28,13 @@ class GridWorldEnv(gym.Env):
         if map_path:
             with open(map_path, 'r') as file:
                 map_data = json.load(file)
-                size = map_data["size"]
+                size = map_data["size"] + 2
                 agent = (map_data["agent_x"], map_data["agent_y"])
                 goal = (map_data["goal_x"], map_data["goal_y"])
                 grid = map_data["grid"]
 
         elif map_dict:
-            size = map_dict['size']
+            size = map_dict['size'] + 2
             agent = (map_dict["agent_x"], map_dict["agent_y"])
             goal = (map_dict["goal_x"], map_dict["goal_y"])
             grid = map_dict["grid"]
