@@ -1,11 +1,13 @@
 from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
 import matplotlib.pyplot as plt
-from simulation import CreateGrid
+from simulation import CreateGrid, GridWorldEnv
 from algorithm import AStarAlgorithm, WavefrontAlgorithm, MeetInTheMiddleAlgorithm
 
 
 def get_grid_img(grid, agent, goal, path=False):
+    # get array of elements in grid
+
     data = grid
     if path:
         for p in path:
@@ -16,6 +18,8 @@ def get_grid_img(grid, agent, goal, path=False):
     return data
 
 def get_grid(data, ax=None, **kwargs):
+    # get grid plot
+
     if ax is None:
         ax = plt.gca()
 
@@ -37,6 +41,7 @@ def get_grid(data, ax=None, **kwargs):
     return im
 
 def create_show_grid(algorithm: str = False, grid: str = 'detour_grid', size_grid: int = 32):
+    # wrapper function to display example grid
 
     if algorithm == 'A-star':
         alg = AStarAlgorithm()
@@ -63,6 +68,8 @@ def create_show_grid(algorithm: str = False, grid: str = 'detour_grid', size_gri
     return data
 
 def get_actions(path, start):
+    # get actions for a given path
+
     # check if path is start to end
     if path[0] != start:
         path.reverse()
@@ -72,14 +79,14 @@ def get_actions(path, start):
     for p in path[1:]:
         if p[1] == p_last[1]:
             if p[0] < p_last[0]:
-                actions.append(1)  # step up
+                actions.append(2)  # step left
             elif p[0] > p_last[0]:
-                actions.append(3)  # step down
+                actions.append(0)  # step right
         elif p[0] == p_last[0]:
             if p[1] > p_last[1]:
-                actions.append(0)  # step right
+                actions.append(3)  # step down
             elif p[1] < p_last[1]:
-                actions.append(2)  # step left
+                actions.append(1)  # step up
         p_last = p
     return actions
 

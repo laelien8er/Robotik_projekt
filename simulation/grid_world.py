@@ -29,20 +29,20 @@ class GridWorldEnv(gym.Env):
             with open(map_path, 'r') as file:
                 map_data = json.load(file)
                 size = map_data["size"] + 2
-                agent = (map_data["agent_x"], map_data["agent_y"])
-                goal = (map_data["goal_x"], map_data["goal_y"])
+                agent = (map_data["agent_y"], map_data["agent_x"])
+                goal = (map_data["goal_y"], map_data["goal_x"])
                 grid = map_data["grid"]
 
         elif map_dict:
             size = map_dict['size'] + 2
-            agent = (map_dict["agent_x"], map_dict["agent_y"])
-            goal = (map_dict["goal_x"], map_dict["goal_y"])
+            agent = (map_dict["agent_y"], map_dict["agent_x"])
+            goal = (map_dict["goal_y"], map_dict["goal_x"])
             grid = map_dict["grid"]
 
         self.size = size  # The size of the square grid
         self.window_size = 512  # The size of the PyGame window
-        self.agent = agent # Start coordinates of agent (x,y)
-        self.goal = goal # coordinates of goal (x,y)
+        self.agent = agent # Start coordinates of agent (y, x)
+        self.goal = goal # coordinates of goal (y, x)
         self.grid = grid # array of grid
 
         np_grid  = np.array(self.grid).astype(int)

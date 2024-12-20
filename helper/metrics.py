@@ -1,9 +1,8 @@
 import time
 import pandas as pd
 import numpy as np
-from algorithm import AStarAlgorithm, WavefrontAlgorithm, MeetInTheMiddleAlgorithm
-
-from simulation import CreateGrid
+from algorithm import AStarAlgorithm, WavefrontAlgorithm, MeetInTheMiddleAlgorithm, QLearning, SASAR
+from simulation import CreateGrid, GridWorldEnv
 
 benchmarks = ['empty', 'star_grid', 'simple_grid', 'bottleneck_grid', 'trap_grid', 'doubletrap_grid', 'detour_grid']
 
@@ -11,6 +10,13 @@ benchmarks = ['empty', 'star_grid', 'simple_grid', 'bottleneck_grid', 'trap_grid
 class Metrics:
 
     def get_metrics(self, algorithm: str = False, size_grid: int = 32, num_runs: int = 5):
+        """
+        Returns dataframe with metrics for given algorithm
+
+        :param algorithm: one in ['A-star', 'Wavefront', 'MITM']
+        :param size_grid: int
+        :param num_runs: int
+        """
         alg = None
 
         measurements = pd.DataFrame(columns=['benchmark', 'avg_time (sec)', 'avg_path_length', 'avg_steps_to_converge',
@@ -118,6 +124,10 @@ class Metrics:
                        decay_rate: int = 0.0005,
                        n_eval_episodes=100
                        ):
+        """
+        Returns Dataframe with metrics for RL-Agent
+        :param algorithm: one in ['sasar', 'qlearning']
+        """
 
         measurements = pd.DataFrame(
             columns=['benchmark', 'train_epoch', 'avg_time_train (sec)', 'mean_reward', 'std_reward'])
